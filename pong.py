@@ -22,6 +22,8 @@ from Tkinter import *
 import string
 import random
 
+single_player = False
+
 sounds_enabled = False
 try:
     from pygame import mixer
@@ -70,6 +72,13 @@ def draw_movable_items():
                                           WIDTH, paddle2_pos-HALF_PAD_HEIGHT,\
                                           fill=PADDLE2_COLOUR)
 
+def toggle_computer():
+    global single_player
+    if single_player:
+        single_player = False
+    else:
+        single_player = True
+
 def new_game():
     global paddle1_pos, paddle2_pos, paddle1_vel, paddle2_vel
     global score1, score2, score1_label, score2_label
@@ -87,6 +96,15 @@ def new_game():
     
 def dynamics():
     global score1,score2,paddle1_pos,paddle2_pos,ball_pos, ball_vel
+
+    if single_player == True:
+        global paddle1_vel
+        paddle_height = 0.5 * sum(canvas.coords(paddle1)[1::2])
+        ball_height = 0.5 * sum(canvas.coords(ball)[1::2])
+        if ball_height - paddle_height > 50:
+            paddle1_vel = +2
+        if paddle_height - ball_height > 50:
+            paddle1_vel = -2
 
     canvas.move(paddle1,0,paddle1_vel)
     canvas.move(paddle2,0,paddle2_vel)
@@ -194,6 +212,8 @@ draw_movable_items()
 
 resetButton = Button(frame, text ="Reset", command = new_game)
 resetButton.pack()
+toggleComputerButton = Button(frame, text="Toggle Computer", command = toggle_computer)
+#toggleComputerButton.pack()
 
 if sounds_enabled:
     load_sounds()
