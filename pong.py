@@ -74,7 +74,7 @@ def draw_movable_items():
 
 def toggle_computer():
     global single_player
-    if single_player:
+    if single_player_int.get() == 0:
         single_player = False
     else:
         single_player = True
@@ -154,6 +154,21 @@ def dynamics():
 
     canvas.after(10,dynamics)
 
+def upPressed(event):
+    global paddle2_vel
+    paddle2_vel = -paddle_acc
+
+def upReleased(event):
+    global paddle2_vel
+    paddle2_vel = 0
+
+def downPressed(event):
+    global paddle2_vel
+    paddle2_vel = paddle_acc
+
+def downReleased(event):
+    global paddle2_vel
+    paddle2_vel = 0
 
 def KeyPressed(event):
     global paddle1_vel, paddle2_vel
@@ -204,16 +219,30 @@ canvas.create_line(PAD_WIDTH,0, PAD_WIDTH,HEIGHT, fill=LINE_COLOUR)
 canvas.create_line(WIDTH-PAD_WIDTH,0, WIDTH-PAD_WIDTH,HEIGHT, fill=LINE_COLOUR)
 
 # Register key event handlers
+frame.bind('<Up>', upPressed)
+frame.bind('<KeyRelease-Up>', upReleased)
+frame.bind('<Down>', downPressed)
+frame.bind('<KeyRelease-Down>', downReleased)
 frame.bind('<Key>', KeyPressed)
 frame.bind('<KeyRelease>', KeyReleased)
 
 # Draw the ball and paddles
 draw_movable_items()
 
-resetButton = Button(frame, text ="Reset", command = new_game)
-resetButton.pack()
-toggleComputerButton = Button(frame, text="Toggle Computer", command = toggle_computer)
-#toggleComputerButton.pack()
+resetButton = Button(frame, text ="Reset Scores", command = new_game)
+resetButton.pack(side='left')
+
+single_player_int = IntVar()
+toggleComputer = Checkbutton(frame,
+                             text="Toggle Computer",
+                             variable = single_player_int,
+                             command = toggle_computer)
+toggleComputer.pack(side='left')
+
+# toggleComputerButton = Button(frame, text="Toggle Computer", command = toggle_computer)
+# toggleComputerButton.pack(side='left')
+
+
 
 if sounds_enabled:
     load_sounds()
