@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #########
-# 2014 Copyright (C) Simon Mouradian
+# 2014-2016 Copyright (C) Simon Mouradian
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ ai = ai_controller.PID(I=0.5)
 
 single_player = False
 
-sounds_enabled = False
+sounds_enabled = True
 try:
     from pygame import mixer
     sounds_enabled = True
@@ -54,20 +54,23 @@ def ball_bbox(ball_pos):
     return ball_pos[0]-BALL_RADIUS, ball_pos[1]-BALL_RADIUS, ball_pos[0]+BALL_RADIUS, ball_pos[1]+BALL_RADIUS
 
 def reset_ball(direction):
-    global ball, ball_pos, ball_vel
+    global ball, ball_pos, ball_vel, tennis_ball
     ball_pos = [WIDTH/2, HEIGHT/2]
     canvas.coords(ball, ball_bbox(ball_pos))
+    canvas.coords(tennis_ball, WIDTH/2, HEIGHT/2)
     if direction==RIGHT:
         ball_vel = [random.randrange(2,4),-random.randrange(1,2)]
     else:
         ball_vel = [-random.randrange(2,4),-random.randrange(1,2)]
 
 def draw_movable_items():
-    global ball, ball_pos, paddle1, paddle1_pos, paddle2, paddle2_pos
+    global ball, ball_pos, paddle1, paddle1_pos, paddle2, paddle2_pos, tennis_ball, tennis_ball_photo
     ball_pos = [WIDTH/2, HEIGHT/2]
     paddle1_pos = HEIGHT/2
     paddle2_pos = HEIGHT/2
     ball = canvas.create_oval(ball_bbox(ball_pos),fill=BALL_COLOUR)
+    tennis_ball_photo = PhotoImage(file="graphics/ball.png")
+    tennis_ball = canvas.create_image(WIDTH/2,HEIGHT/2, image=tennis_ball_photo)
     paddle1 = canvas.create_rectangle(0, paddle1_pos+HALF_PAD_HEIGHT, \
                                           PAD_WIDTH, paddle1_pos-HALF_PAD_HEIGHT, \
                                           fill=PADDLE1_COLOUR)
@@ -111,6 +114,7 @@ def dynamics():
     canvas.move(paddle1,0,paddle1_vel)
     canvas.move(paddle2,0,paddle2_vel)
     canvas.move(ball,ball_vel[0],ball_vel[1])
+    canvas.move(tennis_ball,ball_vel[0],ball_vel[1])
 
     if canvas.coords(paddle1)[1]<=0:
         canvas.coords(paddle1,0,0,PAD_WIDTH,PAD_HEIGHT)
@@ -240,11 +244,6 @@ toggleComputer = Checkbutton(frame,
                              variable = single_player_int,
                              command = toggle_computer)
 toggleComputer.pack(side='left')
-
-# toggleComputerButton = Button(frame, text="Toggle Computer", command = toggle_computer)
-# toggleComputerButton.pack(side='left')
-
-
 
 if sounds_enabled:
     load_sounds()
