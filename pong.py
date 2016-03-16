@@ -21,6 +21,9 @@ from Tkinter import *
 
 import string
 import random
+import ai_controller
+
+ai = ai_controller.PID()
 
 single_player = False
 
@@ -98,13 +101,11 @@ def dynamics():
     global score1,score2,paddle1_pos,paddle2_pos,ball_pos, ball_vel
 
     if single_player == True:
+        ## AI Dynamics here
         global paddle1_vel
         paddle_height = 0.5 * sum(canvas.coords(paddle1)[1::2])
         ball_height = 0.5 * sum(canvas.coords(ball)[1::2])
-        if ball_height - paddle_height > 50:
-            paddle1_vel = +2
-        if paddle_height - ball_height > 50:
-            paddle1_vel = -2
+        paddle1_vel = -0.1 * ai.update(ball_height - paddle_height)
 
     canvas.move(paddle1,0,paddle1_vel)
     canvas.move(paddle2,0,paddle2_vel)
